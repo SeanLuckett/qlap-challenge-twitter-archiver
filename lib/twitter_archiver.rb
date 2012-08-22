@@ -2,7 +2,7 @@ require 'rubygems'
 require 'twitter'
 
 class TwitterArchiver
-attr_accessor :passed_in_arg
+attr_reader :passed_in_arg
 
   def initialize(arg)
     @passed_in_arg = arg
@@ -25,11 +25,5 @@ attr_accessor :passed_in_arg
       end
     end
     file_name
-    #formatted_data = ""
-    #@grabbed_data.attrs.each_pair do |key, val|
-      #formatted_data += "#{key}: #{val}\n"
-    #end
-    #stream.write(formatted_data)
   end
 end
-
