@@ -1,12 +1,5 @@
-# A sample Gemfile
 source "https://rubygems.org"
 
-# gem "rails"
-gem 'rspec'
-gem 'guard'
-gem 'guard-rspec'
-gem 'debugger'
-gem 'growl'
-gem "growl_notify", "~> 0.0.3"
+gem 'rspec', '~>3.3.0'
 
-gem 'twitter'
+gem 'twitter', '~> 5.15.0'
