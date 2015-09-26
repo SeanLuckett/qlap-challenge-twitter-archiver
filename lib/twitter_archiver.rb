@@ -9,7 +9,7 @@ class TwitterArchiver
   end
 
   def get_twitter_data
-    if @data.start_with?("#")
+    if hash_tag?
       Twitter.search(@data)
     else
       Twitter.user(@data)
@@ -17,15 +17,28 @@ class TwitterArchiver
   end
 
   def save_user_data
-    file_name = @data.start_with?("#") ? "#{@data.slice(1..-1)}.txt" : "#{@twitter_data.attrs[:screen_name]}.txt"
+    if hash_tag?
+      file_name = "#{@data.slice(1..-1)}.txt"
+    else
+      file_name = "#{@twitter_data.attrs[:screen_name]}.txt"
+    end
+
     File.open(file_name, "w") do |file|
       @twitter_data.attrs.each_pair do |key, val|
         file.puts "#{key}: #{val}"
       end
     end
+
     file_name
   end
 
   protected
+
   attr_reader :data
+
+  private
+
+  def hash_tag?
+    @data.start_with? '#'
+  end
 end
