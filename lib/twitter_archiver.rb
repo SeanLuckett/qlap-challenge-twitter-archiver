@@ -2,28 +2,30 @@ require 'rubygems'
 require 'twitter'
 
 class TwitterArchiver
-attr_reader :passed_in_arg
 
-  def initialize(arg)
-    @passed_in_arg = arg
-    @grabbed_data = get_twitter_data
+  def initialize(data)
+    @data = data
+    @twitter_data = get_twitter_data
   end
 
   def get_twitter_data
-    if @passed_in_arg.start_with?("#")
-      Twitter.search(@passed_in_arg)
+    if @data.start_with?("#")
+      Twitter.search(@data)
     else
-      Twitter.user(@passed_in_arg)
+      Twitter.user(@data)
     end
   end
 
   def save_user_data
-    file_name = @passed_in_arg.start_with?("#") ? "#{@passed_in_arg.slice(1..-1)}.txt" : "#{@grabbed_data.attrs[:screen_name]}.txt"
+    file_name = @data.start_with?("#") ? "#{@data.slice(1..-1)}.txt" : "#{@twitter_data.attrs[:screen_name]}.txt"
     File.open(file_name, "w") do |file|
-      @grabbed_data.attrs.each_pair do |key, val|
+      @twitter_data.attrs.each_pair do |key, val|
         file.puts "#{key}: #{val}"
       end
     end
     file_name
   end
+
+  protected
+  attr_reader :data
 end

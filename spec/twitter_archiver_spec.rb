@@ -1,53 +1,44 @@
 require 'spec_helper'
 
 describe TwitterArchiver do
-  let(:arg) { "@SomeName" }
-  subject { TwitterArchiver.new(arg) }
-
-  its(:passed_in_arg) { should_not be_nil } 
-
-  describe "When the argument starts with @, it:" do
-    before do
+  context 'when the argument starts with @' do
+    before :each do
       twitter_user = double()
-      twitter_user.stub(:attrs) {{ 
-        :id => 199853758,
-        :name => "Some Name",
-        :screen_name => "SomeName",
-        :location => "Anytown, WA"
+      allow(twitter_user).to receive(:attrs) {{
+        :screen_name => 'SomeName',
+        :location => 'Anytown, WA'
       }}
-      Twitter.stub(:user) { twitter_user }
+
+      allow(Twitter).to receive(:user) { twitter_user }
     end
 
-    it "grabs user data from twitter" do
-      returned_data = subject.get_twitter_data
-      returned_data.attrs[:location].should == "Anytown, WA"
+    it 'grabs user data from twitter' do
+      returned_data = TwitterArchiver.new('@SomeName').get_twitter_data
+      expect(returned_data.attrs[:location]).to eq 'Anytown, WA'
     end
 
-    it "writes data to a file" do
-      file_name = subject.save_user_data
-      Dir.glob(file_name).should be_true
+    it 'writes data to a file' do
+      file_name = TwitterArchiver.new('@SomeName').save_user_data
+      expect(Dir.glob(file_name)).to include 'SomeName.txt'
     end
 
   end
 
-  describe "When the argument starts with #, it:" do
-    let(:arg) { "#StoryBehindMyScar" }
-    subject { TwitterArchiver.new(arg) }
-
+  context 'when the argument starts with #' do
     before do
       twitter_search = double()
-      twitter_search.stub(:attrs) {{ :results => "Jumble of convoluted shit" }}
-      Twitter.stub(:search) { twitter_search }
+      allow(twitter_search).to receive(:attrs) {{ :results => 'This is a tweet.' }}
+      allow(Twitter).to receive(:search) { twitter_search }
     end
 
-    it "searches Twitter for results" do
-      search_data = subject.get_twitter_data
-      search_data.attrs[:results].should include("Jumble")
+    it 'searches Twitter for results' do
+      search_data = TwitterArchiver.new('#StoryBehindMyScar').get_twitter_data
+      expect(search_data.attrs[:results]).to include 'This is a tweet.'
     end
 
-    it "writes data to a file" do
-      file_name = subject.save_user_data
-      Dir.glob(file_name).should be_true
+    it 'writes data to a file' do
+      file_name = TwitterArchiver.new('#StoryBehindMyScar').save_user_data
+      expect(Dir.glob(file_name)).to include 'StoryBehindMyScar.txt'
     end
   end
 end
